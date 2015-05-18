@@ -3,8 +3,12 @@ import peewee
 import sys
 import datetime
 import time
+import logging
 
 database = peewee.SqliteDatabase("urls.db")
+LOG_FILENAME = 'logging.out'
+logging.basicConfig(filename=LOG_FILENAME,
+                    level=logging.INFO)
 
 
 class Tracker(object):
@@ -20,7 +24,7 @@ class Tracker(object):
     def check_access(self, ip):
         current_time = time.mktime(datetime.datetime.utcnow().timetuple())
         if (current_time > self.reset_time):
-            print "Resetting ip tracker"
+            logging.info("re-initializing ip tracker")
             self.ip_tracker = {}
             self.set_reset_time()
 
@@ -51,13 +55,14 @@ def get_uid():
     """
     Create a list of short url uids.
     The list of uids become progressivly more complex
+    Example: ['as', '4s', 's3', 'gd', 'asf', 'fas', 'sda1c0']
     """
     uids = []
     characters = "abcdefghjklmnpqrstuv23456789"
     for uid_length in range(2, 12):
-        for _ in xrange(10):
+        for _ in xrange(25):
             uid = ""
-            for counter in range(0, uid_length):
+            for counter in xrange(uid_length):
                 uid += (characters[random.randint(0, len(characters) - 1)])
             uids.append(uid)
     return uids
@@ -71,7 +76,7 @@ def shorturl_already_exists(url):
         return False
     except:
         e = sys.exc_info()[0]
-        print "ERROR: ", e
+        logging.error(e)
         return False
 
 
@@ -84,7 +89,7 @@ def url_to_uid(url):
         for uid in possible_uuids:
             try:
                 if Shorturls.get(Shorturls.uid == uid):
-                    print "%s is already assocaited" % uid
+                    logging.info("%s is already assocaited" % uid)
                     continue
             except Shorturls.DoesNotExist:
                 shorturl = Shorturls(url=url,
