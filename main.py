@@ -3,7 +3,7 @@ import sys
 import bcrypt
 from peewee import IntegrityError
 from flask import Flask, request, jsonify, redirect, send_from_directory, \
-    render_template
+    render_template, session
 
 app = Flask(__name__, static_url_path='')
 
@@ -15,7 +15,8 @@ tracker = urlfinder.Tracker()
 def index():
     return render_template('index.html')
 
-@app.route('/signup', methods = ['POST', 'GET'])
+
+@app.route('/signup', methods=['POST', 'GET'])
 def signup():
     email = request.form.get('email')
     password = request.form.get('password')
@@ -24,13 +25,14 @@ def signup():
         try:
             urlfinder.save_userinfo(email, hashed_password)
         except IntegrityError:
-            return jsonify({"fail" : "email already in use"})
+            return jsonify({"fail": "email already in use"})
 
         return jsonify({"success": "ok"})
     else:
         return jsonify({"fail": "email and/or password are blank"})
 
-@app.route('/login', methods = ['POST', 'GET'])
+
+@app.route('/login', methods=['POST', 'GET'])
 def login():
     email = request.form.get('email')
     password = request.form.get('password')
@@ -40,17 +42,19 @@ def login():
         if userinfo:
             hashed = userinfo.password
             if bcrypt.hashpw(password, hashed) == hashed:
-                #password is correct
+                # password is correct
                 session['user'] = email
             else:
-                #password is incorrect
+                # password is incorrect
                 pass
     else:
         return jsonify({"fail": "email and/or password are blank"})
 
+
 @app.route('/static/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
+
 
 @app.route('/api')
 def api():
@@ -68,7 +72,9 @@ def api():
 
     if not tracker.check_access(ip):
         urlfinder.logging.info("%s has exceeded the daily limit" % ip)
-        return "Exceeded 24 hour limit -- try again later", 403
+        response = jsonify({"fail": "daily limit exceeded"})
+        response.status_code = 403
+        return response
 
     uid = urlfinder.url_to_uid(url)
     return jsonify({"url": domain + uid})
