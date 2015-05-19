@@ -2,3 +2,4 @@
 .ropeproject/*
 logging*.*
 *.db
+settings.py

@@ -4,10 +4,9 @@ import bcrypt
 from peewee import IntegrityError
 from flask import Flask, request, jsonify, redirect, send_from_directory, \
     render_template, session
-
+from settings import settings
 app = Flask(__name__, static_url_path='')
 
-settings = {"secret_key": "dd32b57e9270fed256d9bed5603b3dbefd06daf"}
 domain = "http://wmd.no/"
 tracker = urlfinder.Tracker()
 
