@@ -1,5 +1,7 @@
 import urlfinder
 import sys
+import bcrypt
+from peewee import IntegrityError
 from flask import Flask, request, jsonify, redirect, send_from_directory, \
     render_template
 
@@ -13,6 +15,38 @@ tracker = urlfinder.Tracker()
 def index():
     return render_template('index.html')
 
+@app.route('/signup', methods = ['POST', 'GET'])
+def signup():
+    email = request.form.get('email')
+    password = request.form.get('password')
+    if email and password:
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(8))
+        try:
+            urlfinder.save_userinfo(email, hashed_password)
+        except IntegrityError:
+            return jsonify({"fail" : "email already in use"})
+
+        return jsonify({"success": "ok"})
+    else:
+        return jsonify({"fail": "email and/or password are blank"})
+
+@app.route('/login', methods = ['POST', 'GET'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if email and password:
+        userinfo = urlfinder.get_userinfo(email)
+        if userinfo:
+            hashed = userinfo.password
+            if bcrypt.hashpw(password, hashed) == hashed:
+                #password is correct
+                session['user'] = email
+            else:
+                #password is incorrect
+                pass
+    else:
+        return jsonify({"fail": "email and/or password are blank"})
 
 @app.route('/static/<path:path>')
 def send_js(path):

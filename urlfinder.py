@@ -1,11 +1,10 @@
 import random
-import peewee
 import sys
 import datetime
 import time
 import logging
+from db_model import Shorturls, User
 
-database = peewee.SqliteDatabase("urls.db")
 LOG_FILENAME = 'logging.out'
 logging.basicConfig(filename=LOG_FILENAME,
                     level=logging.INFO)
@@ -36,19 +35,6 @@ class Tracker(object):
 
     def __init__(self):
         self.set_reset_time()
-
-
-class Shorturls(peewee.Model):
-    url = peewee.CharField()
-    uid = peewee.CharField()
-    created = peewee.DateTimeField()
-    accessed = peewee.IntegerField()
-
-    class Meta:
-        database = database
-
-    def __str__(self):
-        return "url: %s ==> %s" % (self.url, self.uid)
 
 
 def get_uid():
@@ -92,13 +78,15 @@ def url_to_uid(url):
                     logging.info("%s is already assocaited" % uid)
                     continue
             except Shorturls.DoesNotExist:
-                shorturl = Shorturls(url=url,
+                shorturl = Shorturls(user=None,
+                                     url=url,
                                      uid=uid,
                                      created=datetime.datetime.now(),
                                      accessed=0)
                 shorturl.save()
                 print str(shorturl)
                 return shorturl.uid
+
 
 
 def uid_to_url(uid):
@@ -110,7 +98,16 @@ def increase_accessed(uid):
     Shorturls.update(accessed=Shorturls.accessed + 1).where(
     Shorturls.uid == uid).execute()
 
-try:
-    Shorturls.create_table()
-except peewee.OperationalError:
-    pass
+def save_userinfo(email, hashed_password):
+    user = User(email=email,
+                password=hashed_password,
+                join_date=datetime.datetime.now())
+    user.save()
+
+def get_userinfo(email):
+    try:
+        userinfo = User.get(User.email == email)
+    except:
+        return False
+    else:
+        return userinfo

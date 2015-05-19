@@ -9,13 +9,12 @@ class BaseModel(peewee.Model):
 
 
 class User(BaseModel):
-    username = peewee.CharField(unique=True)
+    email = peewee.CharField(unique=True)
     password = peewee.CharField()
-    email = peewee.CharField()
     join_date = peewee.DateTimeField()
 
     class Meta:
-        order_by = ('username',)
+        order_by = ('email',)
 
 
 class Shorturls(BaseModel):
@@ -32,5 +31,6 @@ class Shorturls(BaseModel):
 
 try:
     Shorturls.create_table()
+    User.create_table()
 except peewee.OperationalError:
     pass
