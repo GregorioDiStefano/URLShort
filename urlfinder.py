@@ -13,7 +13,7 @@ logging.basicConfig(filename=LOG_FILENAME,
 
 class Tracker(object):
 
-    limit = 100
+    limit = 30
     reset_time = 0
     ip_tracker = {}
 
@@ -55,7 +55,7 @@ def get_uid():
     """
     Create a list of short url uids.
     The list of uids become progressivly more complex
-    Example: ['as', '4s', 's3', 'gd', 'asf', 'fas', 'sda1c0']
+    Example: ['as', '4s', 's3', 'gd', 'asf', 'fas', 'sda1c0', 'asdg3das']
     """
     uids = []
     characters = "abcdefghjklmnpqrstuv23456789"

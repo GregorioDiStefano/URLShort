@@ -12,7 +12,10 @@ $("#enter_url").keyup(function (e) {
             $("#url").text(data["url"]);
         })
         .fail(function() {
-            alert( "error" );
+            if (jqxhr.status == 403)
+                $("#url").text("limited exceeded, try again later")
+            else
+                $("#url").text("error -- try again")
         })
        .always(function() {
             //alert( "finished" );
