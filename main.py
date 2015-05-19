@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify, redirect, send_from_directory, \
 
 app = Flask(__name__, static_url_path='')
 
+settings = {"secret_key": "dd32b57e9270fed256d9bed5603b3dbefd06daf"}
 domain = "http://wmd.no/"
 tracker = urlfinder.Tracker()
 
@@ -51,6 +52,12 @@ def login():
         return jsonify({"fail": "email and/or password are blank"})
 
 
+@app.route('/logout', methods=['POST', 'GET'])
+def logout():
+    session.pop('user', None)
+    return redirect("/")
+
+
 @app.route('/static/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
@@ -92,4 +99,5 @@ def do_redirect(page_id=None):
     else:
         return redirect(redirect_url)
 if __name__ == '__main__':
+    app.secret_key = settings["secret_key"]
     app.run(debug=True)
