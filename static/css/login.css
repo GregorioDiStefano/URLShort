@@ -1,4 +1,4 @@
-div#login {
+div#login, div#signup {
     background-color: rgb(215, 231, 231);
     display: none;
     margin-top: 20px;
@@ -9,18 +9,18 @@ div#login {
     clear: both;
 }
 
-div#login > form {
+div#login > form, div#signup > form {
     padding: 10px 10px 10px 10px;
     margin: 30px 10px 10px 10px
 }
 
-#login > .exit {
+#login > .exit, #signup > .exit {
     float: right;
     font-size: 28px;
     cursor: pointer;
 }
 
-#login_btn {
+#login_btn, #signup_btn {
     cursor: pointer;
     display: block;
     margin: auto;
@@ -47,3 +47,4 @@ div#login > form {
   text-decoration: none;
   text-align: center;
 }
+

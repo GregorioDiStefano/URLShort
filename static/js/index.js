@@ -28,9 +28,20 @@ $("#enter_url").keyup(function (e) {
 $(document).ready(function() {
     $("#login").hide()
     $("#login_failed").hide()
+    $("#signup").hide()
 
     $("#login > span, #login_link").click(function() {
+        if ($("div#signup").is(':visible')) {
+            $("div#signup").hide()
+        }
         $("#login").toggle()
+    })
+
+    $("#signup > span, #signup_link").click(function() {
+        if ($("div#login").is(':visible')) {
+            $("div#login").hide()
+        }
+        $("#signup").toggle()
     })
 
     $("#login_btn").click(function() {
@@ -46,6 +57,20 @@ $(document).ready(function() {
             .fail(function(data) {
                 alert("Ouch! Looks like the site is having problems");
             })
+    })
 
+    $("#signup_btn").click(function() {
+        $.post( "/signup", $( "#signup_form" ).serialize() )
+            .done(function(data) {
+                if (data.pass) {
+                    $("#login_failed").hide()
+                    alert("pass")
+                } else if (data.fail) {
+                    $("#login_failed").show()
+                }
+            })
+            .fail(function(data) {
+                alert("Ouch! Looks like the site is having problems");
+            })
     })
 })

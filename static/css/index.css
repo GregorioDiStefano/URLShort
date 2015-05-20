@@ -1,6 +1,15 @@
+* {
+  font-family: Courier New;
+}
+
+
 body {
     background-color: #D4FFDF;
     margin: 20px 20px 20px 20px;
+}
+
+input[type='text'], input[type='password'] {
+    text-align: center;
 }
 
 #enter_url {
