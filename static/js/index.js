@@ -1,5 +1,6 @@
 $(window).load(function(){
 $("#enter_url").keyup(function (e) {
+
     if ($(this).val() == "") {
         $(".arrow_box").hide()
     }
@@ -22,4 +23,29 @@ $("#enter_url").keyup(function (e) {
        });
     }
 })
+})
+
+$(document).ready(function() {
+    $("#login").hide()
+    $("#login_failed").hide()
+
+    $("#login > span, #login_link").click(function() {
+        $("#login").toggle()
+    })
+
+    $("#login_btn").click(function() {
+        $.post( "/login", $( "#login_form" ).serialize() )
+            .done(function(data) {
+                if (data.pass) {
+                    $("#login_failed").hide()
+                    alert("pass")
+                } else if (data.fail) {
+                    $("#login_failed").show()
+                }
+            })
+            .fail(function(data) {
+                alert("Ouch! Looks like the site is having problems");
+            })
+
+    })
 })

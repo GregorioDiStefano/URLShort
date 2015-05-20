@@ -7,7 +7,6 @@ from flask import Flask, request, jsonify, redirect, send_from_directory, \
 from settings import settings
 app = Flask(__name__, static_url_path='')
 
-domain = "http://wmd.no/"
 tracker = urlfinder.Tracker()
 
 
@@ -44,11 +43,9 @@ def login():
             if bcrypt.hashpw(password, hashed) == hashed:
                 # password is correct
                 session['user'] = email
-            else:
-                # password is incorrect
-                pass
-    else:
-        return jsonify({"fail": "email and/or password are blank"})
+                return jsonify({"pass": "logged in"})
+
+    return jsonify({"fail": "email and/or password are blank"})
 
 
 @app.route('/logout', methods=['POST', 'GET'])
@@ -74,7 +71,7 @@ def api():
 
     success = urlfinder.shorturl_already_exists(url)
     if success:
-        return jsonify({"url": domain + success.uid})
+        return jsonify({"url": settings["domain"] + success.uid})
 
     if not tracker.check_access(ip):
         urlfinder.logging.info("%s has exceeded the daily limit" % ip)
@@ -83,7 +80,7 @@ def api():
         return response
 
     uid = urlfinder.url_to_uid(url)
-    return jsonify({"url": domain + uid})
+    return jsonify({"url": settings["domain"] + uid})
 
 
 @app.route('/<page_id>')
@@ -99,4 +96,8 @@ def do_redirect(page_id=None):
         return redirect(redirect_url)
 if __name__ == '__main__':
     app.secret_key = settings["secret_key"]
-    app.run(debug=True)
+
+    if not settings["production"]:
+        app.debug = True
+
+    app.run()

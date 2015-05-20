@@ -1,0 +1,49 @@
+div#login {
+    background-color: rgb(215, 231, 231);
+    display: none;
+    margin-top: 20px;
+    display: table-cell;
+    border: 1px solid black;
+    margin-bottom: 30px;
+    float: right;
+    clear: both;
+}
+
+div#login > form {
+    padding: 10px 10px 10px 10px;
+    margin: 30px 10px 10px 10px
+}
+
+#login > .exit {
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+#login_btn {
+    cursor: pointer;
+    display: block;
+    margin: auto;
+    width: 80px;
+}
+
+#login_failed {
+    color: red;
+    margin-bottom: 10px;
+    text-align: center;
+    display: block;
+}
+
+.btn {
+  background: #88b7d5;
+  -webkit-border-radius: 28;
+  -moz-border-radius: 28;
+  border-radius: 28px;
+  text-shadow: 1px 1px 5px #666666;
+  font-family: Courier New;
+  color: #ffffff;
+  font-size: 17px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  text-align: center;
+}
