@@ -33,17 +33,16 @@ def signup():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    email = request.form.get('email')
-    password = request.form.get('password')
+    email = request.form.get('email', "")
+    password = request.form.get('password', "")
+    user_info = urlfinder.get_userinfo(email)
 
-    if email and password:
-        userinfo = urlfinder.get_userinfo(email)
-        if userinfo:
-            hashed = userinfo.password
-            if bcrypt.hashpw(password, hashed) == hashed:
-                # password is correct
-                session['user'] = email
-                return jsonify({"pass": "logged in"})
+    if email and password and user_info:
+        hashed = user_info.password
+        if bcrypt.hashpw(password, hashed) == hashed:
+            # password is correct
+            session['user'] = email
+            return jsonify({"pass": "logged in"})
 
     return jsonify({"fail": "email and/or password are blank"})
 
