@@ -106,10 +106,12 @@ def api():
     else:
         success = urlfinder.shorturl_already_exists(url)
         if success:
+            # An existing shorturl exists, use it!
             return jsonify({"url": settings["domain"] + success.uid})
-
-        uid = urlfinder.url_to_uid(url)
-        return jsonify({"url": settings["domain"] + uid})
+        else:
+            # Generate a new short url
+            uid = urlfinder.url_to_uid(url)
+            return jsonify({"url": settings["domain"] + uid})
 
 
 @app.route('/<page_id>')
