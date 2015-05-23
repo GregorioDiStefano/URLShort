@@ -66,10 +66,10 @@ def shorturl_already_exists(url):
         return False
 
 
-def url_to_uid(url):
+def url_to_uid(url, user=None, force_unique=False):
     possible_uuids = get_uid()
     success = shorturl_already_exists(url)
-    if success:
+    if success and not force_unique:
         return success.uid
     else:
         for uid in possible_uuids:
@@ -78,13 +78,14 @@ def url_to_uid(url):
                     logging.info("%s is already assocaited" % uid)
                     continue
             except Shorturls.DoesNotExist:
-                shorturl = Shorturls(user=None,
+                user = get_userinfo(user) or None
+                shorturl = Shorturls(user=user,
                                      url=url,
                                      uid=uid,
                                      created=datetime.datetime.now(),
                                      accessed=0)
                 shorturl.save()
-                print str(shorturl)
+                logging.info(str(shorturl))
                 return shorturl.uid
 
 

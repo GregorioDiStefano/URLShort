@@ -80,3 +80,7 @@ h1 {
     position: absolute;
     width: 60px;
 }
+
+#logged_in_options {
+    display: none;
+}

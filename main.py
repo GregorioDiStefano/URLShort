@@ -12,25 +12,26 @@ app = Flask(__name__, static_url_path='')
 
 tracker = urlfinder.Tracker()
 
+def fail(msg):
+    msg = {"fail": msg}
+    return jsonify(msg), 403
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    user_logged_in = False
+    if session.get("user", False):
+        user_logged_in = session["user"]
+    return render_template('index.html', logged_in=user_logged_in)
 
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-
-    def fail(msg):
-        msg = {"fail": msg}
-        return jsonify(msg), 403
 
     email = str(request.form.get('email'))
     password = str(request.form.get('password'))
     captcha_text = str(request.form.get('captcha'))
     expected_hash = session.get("signup_hash")
     captcha_success = captcha.validate_captcha(captcha_text, expected_hash)
-
 
     if not captcha_success:
         return fail("wrong captcha")
@@ -46,6 +47,7 @@ def signup():
             return fail("email already in use")
 
         session.pop("signup_hash")
+        session["user"] = email
         return jsonify({"success": "ok"})
     else:
         return fail("email and/or password are blank")
@@ -61,7 +63,7 @@ def login():
         hashed = str(user_info.password)
         if bcrypt.hashpw(password, hashed) == hashed:
             # password is correct
-            session['user'] = email
+            session["user"] = email
             return jsonify({"pass": "logged in"})
 
     return jsonify({"fail": "email and/or password are blank"})
@@ -69,7 +71,7 @@ def login():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    session.pop('user', None)
+    session.pop("user")
     return redirect("/")
 
 
@@ -80,26 +82,34 @@ def send_js(path):
 
 @app.route('/api')
 def api():
-    url = request.args.get('url', "")
+    url = request.args.get("url", "")
     ip = request.remote_addr
+    email = session.get("user")
+
+    def limit_exceeded():
+        if not tracker.check_access(ip):
+            urlfinder.logging.info("%s has exceeded the daily limit" % ip)
+            return fail("daily limit exceeded")
 
     if url.startswith("http://") or url.startswith("https://"):
         pass
     else:
         url = "http://%s" % url
 
-    success = urlfinder.shorturl_already_exists(url)
-    if success:
-        return jsonify({"url": settings["domain"] + success.uid})
+    if email:
+        # Force create a shorturl regardless if one already exists.
+        # This way the logged in user can track how popular his/her
+        # own shorturl is.
+        uid = urlfinder.url_to_uid(url, str(email), True)
+        return jsonify({"url": settings["domain"] + uid})
 
-    if not tracker.check_access(ip):
-        urlfinder.logging.info("%s has exceeded the daily limit" % ip)
-        response = jsonify({"fail": "daily limit exceeded"})
-        response.status_code = 403
-        return response
+    else:
+        success = urlfinder.shorturl_already_exists(url)
+        if success:
+            return jsonify({"url": settings["domain"] + success.uid})
 
-    uid = urlfinder.url_to_uid(url)
-    return jsonify({"url": settings["domain"] + uid})
+        uid = urlfinder.url_to_uid(url)
+        return jsonify({"url": settings["domain"] + uid})
 
 
 @app.route('/<page_id>')
@@ -120,7 +130,7 @@ def get_catcha():
     image_data = io.BytesIO(captcha_obj["image_data"])
     image_hash = captcha_obj["hash"]
     session["signup_hash"] = image_hash
-    return send_file(image_data, mimetype='image/gif')    
+    return send_file(image_data, mimetype='image/gif')
 
 
 if __name__ == '__main__':

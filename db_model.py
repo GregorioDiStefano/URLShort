@@ -26,7 +26,7 @@ class Shorturls(BaseModel):
 
 
     def __str__(self):
-        return "url: %s ==> %s" % (self.url, self.uid)
+        return "user: %s url: %s ==> %s" % (self.user, self.url, self.uid)
 
 
 try:

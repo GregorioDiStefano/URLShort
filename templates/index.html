@@ -4,15 +4,26 @@
         <script src="/static/js/index.js"></script>
         <link rel="stylesheet" type="text/css" href="/static/css/login.css">
         <link rel="stylesheet" type="text/css" href="/static/css/index.css">
-    </head>
+        <script type="text/javascript">
+            {% if logged_in %}
+                var user_logged_in = "{{ logged_in }}"
+            {% else %}
+                var user_logged_in = false
+            {% endif %}
+        </script>
+
+        </head>
 <body>
-    <div class="header">
-        <a href="#" id="signup_link">Sign up </a> | <a href="#" id="login_link"> Login</a>
+    <div class="header" id="logged_out_options">
+        <a href="#" id="signup_link">Sign up</a> | <a href="#" id="login_link">Login</a>
+    </div>
+    <div class="header" id="logged_in_options">
+        <a href="#" id="logout_link">Logout</a>
     </div>
     <div id="login" class="under_header">
         <span class="exit">&#x2715;</span>
         <form id="login_form">
-            <input name="email" type="text" placeholder="Username"></input>
+            <input id="login_email" name="email" type="text" placeholder="Username"></input>
             <br></br>
             <input name="password" type="password" placeholder="Password"></input>
             <br></br>
@@ -23,7 +34,7 @@
     <div id="signup" class="under_header">
         <span class="exit">&#x2715;</span>
         <form id="signup_form">
-            <input name="email" type="text" placeholder="username"></input>
+            <input id="signup_email" name="email" type="text" placeholder="username"></input>
             <br></br>
             <input name="password" type="password" placeholder="password"></input>
             <br></br>
