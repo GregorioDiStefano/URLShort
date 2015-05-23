@@ -27,11 +27,20 @@ div#login > form, div#signup > form {
     width: 80px;
 }
 
-#login_failed {
+#signup_btn {
+    margin-top: 10px;
+}
+
+#login_failed, #signup_failed {
     color: red;
     margin-bottom: 10px;
     text-align: center;
     display: block;
+    font-size: 12px;
+}
+
+#signup_failed {
+    margin-top: 5px;
 }
 
 .btn {

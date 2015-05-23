@@ -13,14 +13,15 @@ def random_point():
 def make_captcha():
     text = ""
     output = cStringIO.StringIO()
+    m = hashlib.md5()
 
     captcha = Image.new("RGB", (size["width"], size["height"]), "black")
     draw = ImageDraw.Draw(captcha)
     
-    for i in range(4):
+    for i in range(settings["captcha_length"]):
         text += random.choice("abcdefghjkmnpqrstuvwxyz2345679")
     
-    m = hashlib.md5()
+
     secret_hash = m.update(text + settings["secret_key"])
     secret_hash = m.hexdigest()
 

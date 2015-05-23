@@ -3,7 +3,7 @@ import sys
 import bcrypt
 from peewee import IntegrityError
 from flask import Flask, request, jsonify, redirect, send_from_directory, \
-    render_template, session, send_file
+    render_template, session, send_file, Response
 from settings import settings
 import captcha
 import io
@@ -20,6 +20,11 @@ def index():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
+
+    def fail(msg):
+        msg = {"fail": msg}
+        return jsonify(msg), 403
+
     email = str(request.form.get('email'))
     password = str(request.form.get('password'))
     captcha_text = str(request.form.get('captcha'))
@@ -28,22 +33,22 @@ def signup():
 
 
     if not captcha_success:
-        return jsonify({"fail": "wrong captcha"})
+        return fail("wrong captcha")
 
     if email and urlfinder.get_userinfo(email):
-        return jsonify({"fail": "email already in use"})
+        return fail("email already in use")
 
     if email and password and captcha_success:
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(8))
         try:
             urlfinder.save_userinfo(email, hashed_password)
         except IntegrityError:
-            return jsonify({"fail": "email already in use"})
+            return fail("email already in use")
 
         session.pop("signup_hash")
         return jsonify({"success": "ok"})
     else:
-        return jsonify({"fail": "email and/or password are blank"})
+        return fail("email and/or password are blank")
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -115,7 +120,6 @@ def get_catcha():
     image_data = io.BytesIO(captcha_obj["image_data"])
     image_hash = captcha_obj["hash"]
     session["signup_hash"] = image_hash
-    print "image_hash: %s" % (image_hash)
     return send_file(image_data, mimetype='image/gif')    
 
 

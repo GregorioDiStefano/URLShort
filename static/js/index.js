@@ -28,6 +28,7 @@ $("#enter_url").keyup(function (e) {
 $(document).ready(function() {
     $("#login").hide()
     $("#login_failed").hide()
+    $("#signup_failed").hide()
     $("#signup").hide()
 
     $("#login > span, #login_link").click(function() {
@@ -64,7 +65,9 @@ $(document).ready(function() {
             .done(function(data) {
             })
             .fail(function(data) {
-                alert("Ouch! Looks like the site is having problems");
+                data = JSON.parse(data.responseText)
+                $("#signup_failed").text(data["fail"])
+                $("#signup_failed").show()
             })
     })
 })
