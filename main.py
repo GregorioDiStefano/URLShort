@@ -3,8 +3,11 @@ import sys
 import bcrypt
 from peewee import IntegrityError
 from flask import Flask, request, jsonify, redirect, send_from_directory, \
-    render_template, session
+    render_template, session, send_file
 from settings import settings
+import captcha
+import io
+
 app = Flask(__name__, static_url_path='')
 
 tracker = urlfinder.Tracker()
@@ -17,15 +20,27 @@ def index():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    if email and password:
+    email = str(request.form.get('email'))
+    password = str(request.form.get('password'))
+    captcha_text = str(request.form.get('captcha'))
+    expected_hash = session.get("signup_hash")
+    captcha_success = captcha.validate_captcha(captcha_text, expected_hash)
+
+
+    if not captcha_success:
+        return jsonify({"fail": "wrong captcha"})
+
+    if email and urlfinder.get_userinfo(email):
+        return jsonify({"fail": "email already in use"})
+
+    if email and password and captcha_success:
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(8))
         try:
             urlfinder.save_userinfo(email, hashed_password)
         except IntegrityError:
             return jsonify({"fail": "email already in use"})
 
+        session.pop("signup_hash")
         return jsonify({"success": "ok"})
     else:
         return jsonify({"fail": "email and/or password are blank"})
@@ -33,12 +48,12 @@ def signup():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    email = request.form.get('email', "")
-    password = request.form.get('password', "")
+    email = str(request.form.get('email', ""))
+    password = str(request.form.get('password', ""))
     user_info = urlfinder.get_userinfo(email)
 
     if email and password and user_info:
-        hashed = user_info.password
+        hashed = str(user_info.password)
         if bcrypt.hashpw(password, hashed) == hashed:
             # password is correct
             session['user'] = email
@@ -93,6 +108,17 @@ def do_redirect(page_id=None):
         return "Error"
     else:
         return redirect(redirect_url)
+
+@app.route('/captcha')
+def get_catcha():
+    captcha_obj = captcha.make_captcha()
+    image_data = io.BytesIO(captcha_obj["image_data"])
+    image_hash = captcha_obj["hash"]
+    session["signup_hash"] = image_hash
+    print "image_hash: %s" % (image_hash)
+    return send_file(image_data, mimetype='image/gif')    
+
+
 if __name__ == '__main__':
     app.secret_key = settings["secret_key"]
 

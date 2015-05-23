@@ -62,12 +62,6 @@ $(document).ready(function() {
     $("#signup_btn").click(function() {
         $.post( "/signup", $( "#signup_form" ).serialize() )
             .done(function(data) {
-                if (data.pass) {
-                    $("#login_failed").hide()
-                    alert("pass")
-                } else if (data.fail) {
-                    $("#login_failed").show()
-                }
             })
             .fail(function(data) {
                 alert("Ouch! Looks like the site is having problems");

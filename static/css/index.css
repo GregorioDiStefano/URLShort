@@ -13,11 +13,10 @@ input[type='text'], input[type='password'] {
 }
 
 #enter_url {
+    width: 600px;
+    margin: auto;
     margin-top: 200px;
     font-size: 48px;
-    text-align: center;
-    min-width: 600px;
-    width: 45%;
 }
 
 .arrow_box {
@@ -63,10 +62,21 @@ h1 {
 }
 
 .center {
-    width: 25%;
-    margin: 0 auto;
+    width: 600px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .header {
     float: right;
+}
+
+#inline_captcha {
+    position: relative;
+}
+
+#captcha {
+    height: 23px;
+    position: absolute;
+    width: 60px;
 }
