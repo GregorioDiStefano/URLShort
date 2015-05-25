@@ -17,10 +17,10 @@ def make_captcha():
 
     captcha = Image.new("RGB", (size["width"], size["height"]), "black")
     draw = ImageDraw.Draw(captcha)
-    
+
     for i in range(settings["captcha_length"]):
-        text += random.choice("abcdefghjkmnpqrstuvwxyz2345679")
-    
+        text += random.choice("abcdefghjkmnpqrstuvwxyz2345679ABCDEFGHJKMNPQRSTUVWXYZ")
+
 
     secret_hash = m.update(text + settings["secret_key"])
     secret_hash = m.hexdigest()

@@ -96,22 +96,8 @@ def api():
     else:
         url = "http://%s" % url
 
-    if email:
-        # Force create a shorturl regardless if one already exists.
-        # This way the logged in user can track how popular his/her
-        # own shorturl is.
-        uid = urlfinder.url_to_uid(url, str(email), True)
-        return jsonify({"url": settings["domain"] + uid})
-
-    else:
-        success = urlfinder.shorturl_already_exists(url)
-        if success:
-            # An existing shorturl exists, use it!
-            return jsonify({"url": settings["domain"] + success.uid})
-        else:
-            # Generate a new short url
-            uid = urlfinder.url_to_uid(url)
-            return jsonify({"url": settings["domain"] + uid})
+    uid = urlfinder.url_to_uid(url, email or None)
+    return jsonify({"url": settings["domain"] + uid})
 
 
 @app.route('/<page_id>')

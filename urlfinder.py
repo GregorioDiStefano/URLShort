@@ -54,22 +54,24 @@ def get_uid():
     return uids
 
 
-def shorturl_already_exists(url):
+def shorturl_already_exists(url, user):
     try:
-        success = Shorturls.get(Shorturls.url == url)
+        if user:
+            success = Shorturls.get(Shorturls.url == url, Shorturls.user == get_userinfo(user))
+        else:
+            success = Shorturls.get(Shorturls.url == url, Shorturls.user == None)
         return success
     except Shorturls.DoesNotExist:
         return False
-    except:
-        e = sys.exc_info()[0]
+    except Exception, e:
         logging.error(e)
         return False
 
 
-def url_to_uid(url, user=None, force_unique=False):
+def url_to_uid(url, user=None):
     possible_uuids = get_uid()
-    success = shorturl_already_exists(url)
-    if success and not force_unique:
+    success = shorturl_already_exists(url, user)
+    if success:
         return success.uid
     else:
         for uid in possible_uuids:
@@ -108,7 +110,7 @@ def save_userinfo(email, hashed_password):
 def get_userinfo(email):
     try:
         userinfo = User.get(User.email == email)
-    except:
+    except Exception, e:
         return False
     else:
         return userinfo
