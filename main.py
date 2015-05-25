@@ -3,7 +3,7 @@ import sys
 import bcrypt
 from peewee import IntegrityError
 from flask import Flask, request, jsonify, redirect, send_from_directory, \
-    render_template, session, send_file, Response
+    render_template, session, send_file
 from settings import settings
 import captcha
 import io
@@ -50,7 +50,7 @@ def signup():
         session["user"] = email
         return jsonify({"success": "ok"})
     else:
-        return fail("email and/or password are blank")
+        return fail("email/password blank")
 
 
 @app.route('/login', methods=['POST', 'GET'])

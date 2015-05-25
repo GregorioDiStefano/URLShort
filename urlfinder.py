@@ -1,5 +1,4 @@
 import random
-import sys
 import datetime
 import time
 import logging
@@ -73,23 +72,21 @@ def url_to_uid(url, user=None):
     success = shorturl_already_exists(url, user)
     if success:
         return success.uid
-    else:
-        for uid in possible_uuids:
-            try:
-                if Shorturls.get(Shorturls.uid == uid):
-                    logging.info("%s is already assocaited" % uid)
-                    continue
-            except Shorturls.DoesNotExist:
-                user = get_userinfo(user) or None
-                shorturl = Shorturls(user=user,
-                                     url=url,
-                                     uid=uid,
-                                     created=datetime.datetime.now(),
-                                     accessed=0)
-                shorturl.save()
-                logging.info(str(shorturl))
-                return shorturl.uid
-
+    for uid in possible_uuids:
+        try:
+            if Shorturls.get(Shorturls.uid == uid):
+                logging.info("%s is already assocaited" % uid)
+                continue
+        except Shorturls.DoesNotExist:
+            user = get_userinfo(user) or None
+            shorturl = Shorturls(user=user,
+                                 url=url,
+                                 uid=uid,
+                                 created=datetime.datetime.now(),
+                                 accessed=0)
+            shorturl.save()
+            logging.info(str(shorturl))
+            return shorturl.uid
 
 
 def uid_to_url(uid):
@@ -110,7 +107,7 @@ def save_userinfo(email, hashed_password):
 def get_userinfo(email):
     try:
         userinfo = User.get(User.email == email)
-    except Exception, e:
+    except Exception:
         return False
     else:
         return userinfo
