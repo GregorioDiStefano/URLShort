@@ -2,6 +2,8 @@ import random
 import datetime
 import time
 import logging
+
+from settings import settings
 from db_model import Shorturls, User
 
 LOG_FILENAME = 'logging.out'
@@ -56,9 +58,11 @@ def get_uid():
 def shorturl_already_exists(url, user):
     try:
         if user:
-            success = Shorturls.get(Shorturls.url == url, Shorturls.user == get_userinfo(user))
+            success = Shorturls.get(Shorturls.url == url,
+                                    Shorturls.user == get_userinfo(user))
         else:
-            success = Shorturls.get(Shorturls.url == url, Shorturls.user == None)
+            success = Shorturls.get(Shorturls.url == url,
+                                    Shorturls.user == None)
         return success
     except Shorturls.DoesNotExist:
         return False
@@ -96,13 +100,15 @@ def uid_to_url(uid):
 
 def increase_accessed(uid):
     Shorturls.update(accessed=Shorturls.accessed + 1).where(
-    Shorturls.uid == uid).execute()
+        Shorturls.uid == uid).execute()
+
 
 def save_userinfo(email, hashed_password):
     user = User(email=email,
                 password=hashed_password,
                 join_date=datetime.datetime.now())
     user.save()
+
 
 def get_userinfo(email):
     try:
@@ -113,3 +119,18 @@ def get_userinfo(email):
         return userinfo
 
 
+def get_user_urls(email):
+    url_list = {}
+    url_list["urls"] = []
+    try:
+        urls = Shorturls.select().where(Shorturls.user == get_userinfo(email))
+    except Exception, e:
+        logging.error(e)
+        return False
+
+    for url in urls:
+        url_list["urls"] += [{"url" : settings["domain"] + url.uid,
+                              "original_url" : url.url,
+                              "created" : url.created,
+                              "accessed" : url.accessed}]
+    return url_list

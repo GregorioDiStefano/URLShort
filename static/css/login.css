@@ -57,3 +57,13 @@ div#login > form, div#signup > form {
   text-align: center;
 }
 
+table {
+    margin-top: 150px;
+    border: 1px solid black;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    padding: 5px;
+    min-width: 50%;
+}
+
+

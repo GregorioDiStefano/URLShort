@@ -12,9 +12,11 @@ app = Flask(__name__, static_url_path='')
 
 tracker = urlfinder.Tracker()
 
+
 def fail(msg):
     msg = {"fail": msg}
     return jsonify(msg), 403
+
 
 @app.route('/')
 def index():
@@ -85,19 +87,26 @@ def api():
     url = request.args.get("url", "")
     ip = request.remote_addr
     email = session.get("user")
+    get_list = request.args.get("list", "")
 
     def limit_exceeded():
         if not tracker.check_access(ip):
             urlfinder.logging.info("%s has exceeded the daily limit" % ip)
             return fail("daily limit exceeded")
 
-    if url.startswith("http://") or url.startswith("https://"):
-        pass
-    else:
-        url = "http://%s" % url
+    limit_exceeded()
 
-    uid = urlfinder.url_to_uid(url, email or None)
-    return jsonify({"url": settings["domain"] + uid})
+    if url:
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "http://%s" % url
+        uid = urlfinder.url_to_uid(url, email or None)
+        return jsonify({"url": settings["domain"] + uid})
+    elif get_list == "json":
+        user_urls = urlfinder.get_user_urls(email)
+        if user_urls:
+            return jsonify(urlfinder.get_user_urls(email))
+
+    return fail("invalid request or error")
 
 
 @app.route('/<page_id>')
@@ -111,6 +120,7 @@ def do_redirect(page_id=None):
         return "Error"
     else:
         return redirect(redirect_url)
+
 
 @app.route('/captcha')
 def get_catcha():

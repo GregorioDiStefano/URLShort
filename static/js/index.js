@@ -9,6 +9,8 @@ $(window).load(function(){
             .done(function(data) {
                 $(".arrow_box").show()
                 $("#url").text(data["url"]);
+                reset_table()
+                fill_table()
             })
             .fail(function() {
                 if (jqxhr.status == 403)
@@ -23,11 +25,18 @@ $(window).load(function(){
     })
 })
 
+
+
+var user_table_org = $("#user_table").clone(true);
+
 $(document).ready(function() {
     $("#login").hide()
     $("#login_failed").hide()
     $("#signup_failed").hide()
     $("#signup").hide()
+
+
+    $("#user_table").hide()
 
     if (user_logged_in)
         logged_in()
@@ -81,10 +90,38 @@ $(document).ready(function() {
     })
 })
 
+function fill_table() {
+        var jqxhr = $.get( "/api?list=json", function() {
+        })
+        .done(function(data) {
+            var urls = data["urls"]
+            urls.forEach(function(item) {
+                $('#user_table tr:last').clone().appendTo("#user_table")
+                console.log("adding!")
+                $('#user_table tr:last .accessed').text(item.accessed)
+                $('#user_table tr:last .url').text(item.url)
+                $('#user_table tr:last .original_url').text(item.original_url.length > 50 ? item.original_url.substring(0,50) + "..." : item.original_url)
+                $('#user_table tr:last .date').text(item.created)
+            })
+        })
+        .fail(function() {
+        })
+        .always(function() {
+        });
+}
+
+function reset_table() {
+
+   $("#user_table").find("tr:gt(1)").remove();
+
+}
 
 function logged_out() {
     $("#logged_out_options").show()
     $("#logged_in_options").hide()
+    $("#user_table").hide()
+
+    $("#enter_url").val("")
 }
 
 
@@ -97,5 +134,8 @@ function logged_in(email) {
     if (!email)
         email = user_logged_in
 
+    reset_table()
+    fill_table()
+    $("#user_table").show()
     $("#logout_link").text("Log out [" + email + "]")
 }
