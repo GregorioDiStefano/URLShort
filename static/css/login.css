@@ -63,7 +63,27 @@ table {
     border-radius: 5px;
     -moz-border-radius: 5px;
     padding: 5px;
-    min-width: 50%;
+    min-width: 60%;
+}
+
+#logo {
+    z-index: 1;
+    position: absolute;
+    text-align: center;
+
+    position: absolute;
+    margin-top: 100px;
+    left: 50%;
+
+    padding: .8em 1.2em;
+    color: white;
+    background-color: darkcyan;
+
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 
 

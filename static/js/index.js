@@ -4,7 +4,7 @@ $(window).load(function(){
             $(".arrow_box").hide()
         }
         if (e.keyCode == 13) {
-            var jqxhr = $.get( "/api?url=" + $("#enter_url").val(), function() {
+            var jqxhr = $.get( "/api?url=" + $("input#enter_url").val(), function() {
             })
             .done(function(data) {
                 $(".arrow_box").show()
@@ -120,8 +120,8 @@ function logged_out() {
     $("#logged_out_options").show()
     $("#logged_in_options").hide()
     $("#user_table").hide()
-
     $("#enter_url").val("")
+    $(".arrow_box").hide()
 }
 
 

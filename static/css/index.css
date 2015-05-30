@@ -12,7 +12,7 @@ input[type='text'], input[type='password'] {
     text-align: center;
 }
 
-#enter_url {
+input#enter_url {
     width: 600px;
     margin: auto;
     margin-top: 200px;
@@ -69,6 +69,7 @@ h1 {
 
 .header {
     float: right;
+    z-index: 10;
 }
 
 #inline_captcha {
@@ -83,4 +84,8 @@ h1 {
 
 #logged_in_options {
     display: none;
+}
+
+td.url {
+    font-weight: bolder;
 }
