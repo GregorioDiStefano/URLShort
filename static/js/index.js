@@ -27,7 +27,7 @@ $(window).load(function(){
 
 
 
-var user_table_org = $("#user_table").clone(true);
+var token = "";
 
 $(document).ready(function() {
     $("#login").hide()
@@ -40,6 +40,14 @@ $(document).ready(function() {
 
     if (user_logged_in)
         logged_in()
+
+    var hashVal = window.location.hash.split("#")[1];
+    if(hashVal == 'reset') {
+        $("#reset_passwd").show()
+        $("#dim-screen").show()
+        token = gup("token")
+    }
+
 
     $("#login > span, #login_link").click(function() {
         if ($("div#signup").is(':visible')) {
@@ -88,6 +96,28 @@ $(document).ready(function() {
                 $("#signup_failed").show()
             })
     })
+
+    $('#reset_btn').click( function() {
+        if ($("input[name=password1]").val() != $("input[name=password2]").val()
+            || $("input[name=password1]").val() == "")
+        {
+            alert("Passwords dont match")
+        }
+
+        else if ($("input[name=password1]").val().length < 5)
+        {
+            alert("Ugh, seriously? Picka longer password.")
+        }
+
+        else {
+            var new_password = $("input[name=password1]").val()
+            $.post( "/reset", { "new_password": new_password, "token": token })
+                .done(function( data ) {
+                    alert( "Data Loaded: " + data );
+                });
+        }
+})
+
 })
 
 function fill_table() {
@@ -111,9 +141,7 @@ function fill_table() {
 }
 
 function reset_table() {
-
    $("#user_table").find("tr:gt(1)").remove();
-
 }
 
 function logged_out() {
@@ -138,4 +166,13 @@ function logged_in(email) {
     fill_table()
     $("#user_table").show()
     $("#logout_link").text("Log out [" + email + "]")
+}
+
+function gup( name, url ) {
+  if (!url) url = location.href
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( url );
+  return results == null ? null : results[1];
 }

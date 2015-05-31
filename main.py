@@ -7,6 +7,8 @@ from flask import Flask, request, jsonify, redirect, send_from_directory, \
 from settings import settings
 import captcha
 import io
+from itsdangerous import TimestampSigner
+import base64
 
 app = Flask(__name__, static_url_path='')
 
@@ -88,6 +90,7 @@ def api():
     ip = request.remote_addr
     email = session.get("user")
     get_list = request.args.get("list", "")
+    passwd_reset = request.args.get("pw_reset", "")
 
     def limit_exceeded():
         if not tracker.check_access(ip):
@@ -105,8 +108,32 @@ def api():
         user_urls = urlfinder.get_user_urls(email)
         if user_urls:
             return jsonify(urlfinder.get_user_urls(email))
+    elif passwd_reset == "True" and email:
+        setup_password_reset()
+        return jsonify({"pass":"check email"})
 
     return fail("invalid request or error")
+
+def setup_password_reset():
+    email = session.get("user")
+    if email and urlfinder.get_userinfo(email):
+        s = TimestampSigner(settings["secret_key"])
+        signed_string_b64 = base64.b64encode(s.sign(email))
+        print "token: ", signed_string_b64
+
+
+@app.route('/reset', methods=["POST"])
+def do_password_reset():
+        token = str(request.form.get('token', ""))
+        new_password = str(request.form.get('new_password', ""))
+        token = base64.b64decode(token)
+        print token
+        if token and new_password:
+            s = TimestampSigner(settings["secret_key"])
+            result = s.unsign(token, max_age=60*60*24)
+            hashed_password = bcrypt.hashpw(new_password, bcrypt.gensalt(8))
+            urlfinder.update_password(result, hashed_password)
+            return jsonify({"result" :result})
 
 
 @app.route('/<page_id>')

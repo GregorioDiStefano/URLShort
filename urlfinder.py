@@ -118,6 +118,15 @@ def get_userinfo(email):
     else:
         return userinfo
 
+def update_password(email, new_password):
+    try:
+        userinfo = User.get(User.email == email)
+        userinfo.password = new_password
+        userinfo.save()
+    except Exception:
+        return False
+    else:
+        return userinfo
 
 def get_user_urls(email):
     url_list = {}
