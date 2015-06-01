@@ -95,7 +95,9 @@ def send_js(path):
 def api():
     url = request.args.get("url", "")
     ip = request.remote_addr
-    email = session.get("user")
+    email_from_session = session.get("user")
+    email_from_get = request.args.get("email")
+
     get_list = request.args.get("list", "")
     passwd_reset = request.args.get("pw_reset", "")
 
@@ -109,27 +111,26 @@ def api():
     if url:
         if not url.startswith("http://") and not url.startswith("https://"):
             url = "http://%s" % url
-        uid = urlfinder.url_to_uid(url, email or None)
+        uid = urlfinder.url_to_uid(url, email_from_session or None)
         return jsonify({"url": settings["domain"] + uid})
     elif get_list == "json":
-        user_urls = urlfinder.get_user_urls(email)
+        user_urls = urlfinder.get_user_urls(email_from_session)
         if user_urls:
-            return jsonify(urlfinder.get_user_urls(email))
-    elif passwd_reset == "True" and email:
-        setup_password_reset()
+            return jsonify(urlfinder.get_user_urls(email_from_session))
+    elif passwd_reset == "True" and email_from_get:
+        setup_password_reset(email_from_get)
         return jsonify({"pass":"check email"})
 
     return fail("invalid request or error")
 
-def setup_password_reset():
-    email = session.get("user")
+def setup_password_reset(email):
     if email and urlfinder.get_userinfo(email):
         s = TimestampSigner(settings["secret_key"])
         signed_string_b64 = base64.b64encode(s.sign(email))
-        print "token: ", signed_string_b64
 
-        msg = Message("Hello",
-                    recipients=["greg.distefano@gmail.com"])
+        msg = Message(body="Hi,\nYou requested a password reset.\nHere is your reset link: " + settings["domain"] + "?token=" + signed_string_b64 + "#reset",
+                        subject="Password reset",
+                        recipients=[email])
         mail.send(msg)
 
 

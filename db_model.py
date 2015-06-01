@@ -20,7 +20,7 @@ class User(BaseModel):
 class Shorturls(BaseModel):
     url = peewee.CharField()
     uid = peewee.CharField()
-    created = peewee.DateTimeField()
+    created = peewee.DateField()
     accessed = peewee.IntegerField()
     user = peewee.ForeignKeyField(User, null=True)
 

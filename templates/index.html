@@ -2,8 +2,10 @@
     <head>
         <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="/static/js/index.js"></script>
+        <script src="/static/js/sweetalert.min.js"></script>
         <link rel="stylesheet" type="text/css" href="/static/css/login.css">
         <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/sweetalert.css">
         <script type="text/javascript">
             {% if logged_in %}
                 var user_logged_in = "{{ logged_in }}"
@@ -26,7 +28,7 @@
             <input id="login_email" name="email" type="text" placeholder="Username"></input>
             <br></br>
             <input name="password" type="password" placeholder="Password"></input>
-            <br></br>
+            <p id="passwd_reset">password reset?</p>
             <span id="login_failed">wrong login details</span>
             <span class="btn" id="login_btn">Login</span>
         </form>

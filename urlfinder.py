@@ -140,6 +140,6 @@ def get_user_urls(email):
     for url in urls:
         url_list["urls"] += [{"url" : settings["domain"] + url.uid,
                               "original_url" : url.url,
-                              "created" : url.created,
+                              "created" : str(url.created),
                               "accessed" : url.accessed}]
     return url_list

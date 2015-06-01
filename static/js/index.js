@@ -116,7 +116,12 @@ $(document).ready(function() {
                     alert( "Data Loaded: " + data );
                 });
         }
-})
+    })
+
+    $("#passwd_reset").click(function() {
+        swal("Password reset!", "Check your e-mail to complete the password reset process", "success")
+        $.get("api?pw_reset=True&email="+$("#login_email").val())
+    })
 
 })
 
@@ -127,7 +132,7 @@ function fill_table() {
             var urls = data["urls"]
             urls.forEach(function(item) {
                 $('#user_table tr:last').clone().appendTo("#user_table")
-                console.log("adding!")
+
                 $('#user_table tr:last .accessed').text(item.accessed)
                 $('#user_table tr:last .url').text(item.url)
                 $('#user_table tr:last .original_url').text(item.original_url.length > 50 ? item.original_url.substring(0,50) + "..." : item.original_url)
