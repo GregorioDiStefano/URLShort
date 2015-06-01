@@ -9,6 +9,9 @@ import captcha
 import io
 from itsdangerous import TimestampSigner
 import base64
+from validate_email import validate_email
+from flask import Flask
+from flask_mail import Mail, Message
 
 app = Flask(__name__, static_url_path='')
 
@@ -36,12 +39,16 @@ def signup():
     captcha_text = str(request.form.get('captcha'))
     expected_hash = session.get("signup_hash")
     captcha_success = captcha.validate_captcha(captcha_text, expected_hash)
+    is_valid_email = validate_email(email)
 
     if not captcha_success:
         return fail("wrong captcha")
 
     if email and urlfinder.get_userinfo(email):
         return fail("email already in use")
+
+    if not is_valid_email:
+        return fail("not valid email")
 
     if email and password and captcha_success:
         hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(8))
@@ -121,6 +128,10 @@ def setup_password_reset():
         signed_string_b64 = base64.b64encode(s.sign(email))
         print "token: ", signed_string_b64
 
+        msg = Message("Hello",
+                    recipients=["greg.distefano@gmail.com"])
+        mail.send(msg)
+
 
 @app.route('/reset', methods=["POST"])
 def do_password_reset():
@@ -164,4 +175,13 @@ if __name__ == '__main__':
     if not settings["production"]:
         app.debug = True
 
+    app.config.update(
+        MAIL_SERVER=settings["MAIL_SERVER"],
+        MAIL_PORT=settings["MAIL_PORT"],
+        MAIL_USE_SSL=settings["MAIL_USE_SSL"],
+        MAIL_USERNAME=settings["MAIL_USERNAME"],
+        MAIL_PASSWORD=settings["MAIL_PASSWORD"],
+        MAIL_DEFAULT_SENDER=settings["MAIL_DEFAULT_SENDER"],
+        )
+    mail=Mail(app)
     app.run()
