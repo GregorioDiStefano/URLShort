@@ -4,6 +4,8 @@ $(window).load(function(){
             $(".arrow_box").hide()
         }
         if (e.keyCode == 13) {
+            if ($("input#enter_url").val().indexOf(".") == -1)
+                return
             var jqxhr = $.get( "/api?url=" + $("input#enter_url").val(), function() {
             })
             .done(function(data) {
@@ -112,8 +114,12 @@ $(document).ready(function() {
         else {
             var new_password = $("input[name=password1]").val()
             $.post( "/reset", { "new_password": new_password, "token": token })
+                .fail(function( data ) {
+                    //TODO: show error here
+                })
+
                 .done(function( data ) {
-                    alert( "Data Loaded: " + data );
+                    window.location = window.location.origin
                 });
         }
     })

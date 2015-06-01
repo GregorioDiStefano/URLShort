@@ -108,7 +108,7 @@ def api():
 
     limit_exceeded()
 
-    if url:
+    if url and ~url.find("."):
         if not url.startswith("http://") and not url.startswith("https://"):
             url = "http://%s" % url
         uid = urlfinder.url_to_uid(url, email_from_session or None)
@@ -136,16 +136,24 @@ def setup_password_reset(email):
 
 @app.route('/reset', methods=["POST"])
 def do_password_reset():
-        token = str(request.form.get('token', ""))
-        new_password = str(request.form.get('new_password', ""))
-        token = base64.b64decode(token)
-        print token
+        try:
+            token = str(request.form.get('token', ""))
+            new_password = str(request.form.get('new_password', ""))
+            token = base64.b64decode(token)
+        except Exception, e:
+            urlfinder.logging.error(e)
+            return fail("error decoding token")
+
         if token and new_password:
-            s = TimestampSigner(settings["secret_key"])
-            result = s.unsign(token, max_age=60*60*24)
-            hashed_password = bcrypt.hashpw(new_password, bcrypt.gensalt(8))
-            urlfinder.update_password(result, hashed_password)
-            return jsonify({"result" :result})
+            try:
+                s = TimestampSigner(settings["secret_key"])
+                result = s.unsign(token, max_age=60*60*24)
+                hashed_password = bcrypt.hashpw(new_password, bcrypt.gensalt(8))
+                urlfinder.update_password(result, hashed_password)
+            except Exception, e:
+                urlfinder.logging.error(e)
+                return fail("error resetting password")
+            return jsonify({"success": "password reset"})
 
 
 @app.route('/<page_id>')
