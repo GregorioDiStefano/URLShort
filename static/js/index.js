@@ -125,8 +125,8 @@ $(document).ready(function() {
     })
 
     $("#passwd_reset").click(function() {
-        swal("Password reset!", "Check your e-mail to complete the password reset process", "success")
         $.get("api?pw_reset=True&email="+$("#login_email").val())
+        swal("Password reset!", "Check your e-mail to complete the password reset process", "success")
     })
 
 })
@@ -140,8 +140,13 @@ function fill_table() {
                 $('#user_table tr:last').clone().appendTo("#user_table")
 
                 $('#user_table tr:last .accessed').text(item.accessed)
-                $('#user_table tr:last .url').text(item.url)
-                $('#user_table tr:last .original_url').text(item.original_url.length > 50 ? item.original_url.substring(0,50) + "..." : item.original_url)
+                $('#user_table tr:last .url a' ).text(item.url)
+                $('#user_table tr:last .url a' ).attr("href", item.url)
+
+                $('#user_table tr:last .original_url a').text(item.original_url.length > 35 
+                                                        ? item.original_url.substring(0,35) + "..." + item.original_url.substr(item.original_url.length - 10) 
+                                                        : item.original_url)
+                $('#user_table tr:last .original_url a').attr("href", item.original_url)
                 $('#user_table tr:last .date').text(item.created)
             })
         })
