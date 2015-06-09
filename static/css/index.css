@@ -15,7 +15,7 @@ input[type='text'], input[type='password'] {
 input#enter_url {
     width: 600px;
     margin: auto;
-    margin-top: 200px;
+    margin-top: 40%;
     font-size: 48px;
 }
 

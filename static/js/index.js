@@ -131,6 +131,13 @@ $(document).ready(function() {
 
 })
 
+function remove_protocol(url) {
+    if (url.indexOf("https://") === 0)
+        return url.substr(8)
+    else if (url.indexOf("http://") == 0)
+        return url.substr(7)
+}
+
 function fill_table() {
         var jqxhr = $.get( "/api?list=json", function() {
         })
@@ -140,7 +147,7 @@ function fill_table() {
                 $('#user_table tr:last').clone().appendTo("#user_table")
 
                 $('#user_table tr:last .accessed').text(item.accessed)
-                $('#user_table tr:last .url a' ).text(item.url)
+                $('#user_table tr:last .url a' ).text(remove_protocol(item.url))
                 $('#user_table tr:last .url a' ).attr("href", item.url)
 
                 $('#user_table tr:last .original_url a').text(item.original_url.length > 35 
