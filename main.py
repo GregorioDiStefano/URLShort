@@ -181,8 +181,18 @@ def get_catcha():
 if __name__ == '__main__':
     app.secret_key = settings["secret_key"]
 
+    if settings["production"]:
+        app.config.update(
+            MAIL_SERVER=settings["MAIL_SERVER"],
+            MAIL_PORT=settings["MAIL_PORT"],
+            MAIL_USE_SSL=settings["MAIL_USE_SSL"],
+            MAIL_USERNAME=settings["MAIL_USERNAME"],
+            MAIL_PASSWORD=settings["MAIL_PASSWORD"],
+            MAIL_DEFAULT_SENDER=settings["MAIL_DEFAULT_SENDER"],
+            )
+        mail=Mail(app)
+
     if not settings["production"]:
         app.debug = True
-
 
     app.run()
