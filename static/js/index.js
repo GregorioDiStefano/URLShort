@@ -4,7 +4,7 @@ $(window).load(function(){
             $(".arrow_box").hide()
         }
         if (e.keyCode == 13) {
-            if ($("input#enter_url").val().indexOf(".") == -1)
+            if ($("input#enter_url").val().toLowerCase().search(/[.][a-z]+/) == -1)
                 return
             var jqxhr = $.get( "/api?url=" + $("input#enter_url").val(), function() {
             })
@@ -136,6 +136,7 @@ function remove_protocol(url) {
         return url.substr(8)
     else if (url.indexOf("http://") == 0)
         return url.substr(7)
+    else return url
 }
 
 function fill_table() {

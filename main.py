@@ -184,13 +184,5 @@ if __name__ == '__main__':
     if not settings["production"]:
         app.debug = True
 
-    app.config.update(
-        MAIL_SERVER=settings["MAIL_SERVER"],
-        MAIL_PORT=settings["MAIL_PORT"],
-        MAIL_USE_SSL=settings["MAIL_USE_SSL"],
-        MAIL_USERNAME=settings["MAIL_USERNAME"],
-        MAIL_PASSWORD=settings["MAIL_PASSWORD"],
-        MAIL_DEFAULT_SENDER=settings["MAIL_DEFAULT_SENDER"],
-        )
-    mail=Mail(app)
+
     app.run()

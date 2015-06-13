@@ -1,5 +1,5 @@
 div#login, div#signup {
-    background-color: rgb(215, 231, 231);
+    background-color: #88b7d5;
     display: none;
     margin-top: 20px;
     display: table-cell;
@@ -60,7 +60,7 @@ div#reset_passwd > form {
 }
 
 .btn {
-  background: #88b7d5;
+  background: #88B6FF;
   -webkit-border-radius: 28;
   -moz-border-radius: 28;
   border-radius: 28px;
@@ -74,7 +74,7 @@ div#reset_passwd > form {
 }
 
 table {
-    margin-top: 150px;
+    margin-top: 50px;
     border: 1px solid black;
     border-radius: 5px;
     -moz-border-radius: 5px;
@@ -90,7 +90,7 @@ table {
     position: absolute;
     margin-top: 100px;
     left: 50%;
-
+    width: 650px;
     padding: .8em 1.2em;
     color: white;
     background-color: darkcyan;
