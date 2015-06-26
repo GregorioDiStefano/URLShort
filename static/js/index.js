@@ -97,7 +97,7 @@ $(document).ready(function() {
 
 		var d = new Date()
 	        $("#inline_captcha > img").attr("src", "/captcha?"+d.getTime());
-                
+
                 $("#signup_failed").text(data["fail"])
                 $("#signup_failed").show()
             })
