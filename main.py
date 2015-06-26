@@ -57,7 +57,7 @@ def signup():
         except IntegrityError:
             return fail("email already in use")
 
-        session.pop("signup_hash")
+        session.pop("signup_hash", None)
         session["user"] = email
         return jsonify({"success": "ok"})
     else:
@@ -82,7 +82,7 @@ def login():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    session.pop("user")
+    session.pop("user", None)
     return redirect("/")
 
 
@@ -178,21 +178,20 @@ def get_catcha():
     return send_file(image_data, mimetype='image/gif')
 
 
-if __name__ == '__main__':
-    app.secret_key = settings["secret_key"]
+app.secret_key = settings["secret_key"]
 
-    if settings["production"]:
-        app.config.update(
-            MAIL_SERVER=settings["MAIL_SERVER"],
-            MAIL_PORT=settings["MAIL_PORT"],
-            MAIL_USE_SSL=settings["MAIL_USE_SSL"],
-            MAIL_USERNAME=settings["MAIL_USERNAME"],
-            MAIL_PASSWORD=settings["MAIL_PASSWORD"],
-            MAIL_DEFAULT_SENDER=settings["MAIL_DEFAULT_SENDER"],
-            )
-        mail=Mail(app)
+if settings["production"]:
+	app.config.update(
+	    MAIL_SERVER=settings["MAIL_SERVER"],
+	    MAIL_PORT=settings["MAIL_PORT"],
+	    MAIL_USE_SSL=settings["MAIL_USE_SSL"],
+	    MAIL_USERNAME=settings["MAIL_USERNAME"],
+	    MAIL_PASSWORD=settings["MAIL_PASSWORD"],
+	    MAIL_DEFAULT_SENDER=settings["MAIL_DEFAULT_SENDER"],
+	    )
+	mail=Mail(app)
 
-    if not settings["production"]:
-        app.debug = True
+if not settings["production"]:
+    app.debug = True
 
-    app.run()
+
