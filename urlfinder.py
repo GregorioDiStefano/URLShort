@@ -4,7 +4,7 @@ import time
 import logging
 
 from settings import settings
-from db_model import Shorturls, User
+from db import Shorturls, User
 
 LOG_FILENAME = 'logging.out'
 logging.basicConfig(filename=LOG_FILENAME,

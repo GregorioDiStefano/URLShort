@@ -12,10 +12,11 @@ import base64
 from validate_email import validate_email
 from flask import Flask
 from flask_mail import Mail, Message
+import logging
 
 app = Flask(__name__, static_url_path='')
-
 tracker = urlfinder.Tracker()
+logger = logging.getLogger()
 
 
 def fail(msg):
@@ -103,7 +104,7 @@ def api():
 
     def limit_exceeded():
         if not tracker.check_access(ip):
-            urlfinder.logging.info("%s has exceeded the daily limit" % ip)
+            logger.info("%s has exceeded the daily limit" % ip)
             return fail("daily limit exceeded")
 
     limit_exceeded()
@@ -141,7 +142,7 @@ def do_password_reset():
             new_password = str(request.form.get('new_password', ""))
             token = base64.b64decode(token)
         except Exception, e:
-            urlfinder.logging.error(e)
+            logger.error(e)
             return fail("error decoding token")
 
         if token and new_password:
@@ -151,7 +152,7 @@ def do_password_reset():
                 hashed_password = bcrypt.hashpw(new_password, bcrypt.gensalt(8))
                 urlfinder.update_password(result, hashed_password)
             except Exception, e:
-                urlfinder.logging.error(e)
+                logger.error(e)
                 return fail("error resetting password")
             return jsonify({"success": "password reset"})
 
@@ -163,7 +164,7 @@ def do_redirect(page_id=None):
         urlfinder.increase_accessed(page_id)
     except:
         e = sys.exc_info()[0]
-        urlfinder.logging.error(e)
+        logger.error(e)
         return "Error"
     else:
         return redirect(redirect_url)
