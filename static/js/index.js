@@ -10,7 +10,7 @@ $(window).load(function(){
             })
             .done(function(data) {
                 $(".arrow_box").show()
-                $("#url").text(data["url"]);
+                $("#url").text(remove_protocol(data["url"]));
                 reset_table()
                 fill_table()
             })
