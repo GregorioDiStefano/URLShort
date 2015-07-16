@@ -143,3 +143,17 @@ def get_user_urls(email):
                               "created" : str(url.created),
                               "accessed" : url.accessed}]
     return url_list
+
+
+def remove_url(delete, email):
+    if email:
+        try:
+            shorturl_key = delete.split("/")[-1]
+            url = Shorturls.delete().where(Shorturls.user == get_userinfo(email), Shorturls.uid == shorturl_key)
+            url.execute()
+        except Exception:
+            return False
+        else:
+            return True
+    else:
+        return False

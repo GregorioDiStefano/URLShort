@@ -98,6 +98,7 @@ def api():
     ip = request.remote_addr
     email_from_session = session.get("user")
     email_from_get = request.args.get("email")
+    delete = request.args.get("delete")
 
     get_list = request.args.get("list", "")
     passwd_reset = request.args.get("pw_reset", "")
@@ -121,8 +122,17 @@ def api():
     elif passwd_reset == "True" and email_from_get:
         setup_password_reset(email_from_get)
         return jsonify({"pass":"check email"})
+    elif delete:
+        result = urlfinder.remove_url(delete, email_from_session)
+        if result:
+            return jsonify({"delete": "okay"})
 
     return fail("invalid request or error")
+
+
+
+
+
 
 def setup_password_reset(email):
     if email and urlfinder.get_userinfo(email):

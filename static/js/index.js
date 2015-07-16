@@ -63,6 +63,14 @@ $(document).ready(function() {
         logged_out()
     })
 
+
+    $(document).on( 'click', '.delete', function () {
+        var url = $(this).siblings(".url").text()
+        $.get("/api?delete=" + url)
+        $(this).closest("tr").hide()
+    });
+
+
     $("#signup > span, #signup_link").click(function() {
         if ($("div#login").is(':visible')) {
             $("div#login").hide()
@@ -95,8 +103,8 @@ $(document).ready(function() {
             .fail(function(data) {
                 data = JSON.parse(data.responseText)
 
-		var d = new Date()
-	        $("#inline_captcha > img").attr("src", "/captcha?"+d.getTime());
+            var d = new Date()
+            $("#inline_captcha > img").attr("src", "/captcha?"+d.getTime());
 
                 $("#signup_failed").text(data["fail"])
                 $("#signup_failed").show()
@@ -151,6 +159,7 @@ function fill_table() {
             urls.forEach(function(item) {
                 $('#user_table tr:last').clone().appendTo("#user_table")
 
+                $('#user_table tr:last .delete').text("\u2715")
                 $('#user_table tr:last .accessed').text(item.accessed)
                 $('#user_table tr:last .url a' ).text(remove_protocol(item.url))
                 $('#user_table tr:last .url a' ).attr("href", item.url)
