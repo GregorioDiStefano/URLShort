@@ -19,6 +19,10 @@ input#enter_url {
     font-size: 48px;
 }
 
+.delete {
+    cursor: pointer;
+}
+
 .arrow_box {
     text-align: center;
     position: relative;
